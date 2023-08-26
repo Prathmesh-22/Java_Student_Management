@@ -180,20 +180,18 @@
                                               <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                  <Group type="102" attributes="0">
-                                                      <Component id="rbtMale" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace pref="59" max="32767" attributes="0"/>
-                                                      <Component id="rbtFemale" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
-                                                  <Component id="txtName" max="32767" attributes="0"/>
-                                                  <Component id="txtAge" max="32767" attributes="0"/>
-                                                  <Component id="cmbQualification" max="32767" attributes="0"/>
-                                                  <Component id="dcDob" max="32767" attributes="0"/>
-                                                  <Component id="txtEnrollmentNo" alignment="0" max="32767" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                              <Group type="102" attributes="0">
+                                                  <Component id="rbtMale" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace pref="59" max="32767" attributes="0"/>
+                                                  <Component id="rbtFemale" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="txtContact" min="-2" pref="200" max="-2" attributes="0"/>
+                                              <Component id="txtName" max="32767" attributes="0"/>
+                                              <Component id="txtAge" max="32767" attributes="0"/>
+                                              <Component id="txtContact" max="32767" attributes="0"/>
+                                              <Component id="cmbQualification" max="32767" attributes="0"/>
+                                              <Component id="dcDob" max="32767" attributes="0"/>
+                                              <Component id="txtEnrollmentNo" alignment="0" max="32767" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -388,9 +386,6 @@
                               <ComponentRef name="cmbQualification"/>
                             </Property>
                           </Properties>
-                          <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtContactActionPerformed"/>
-                          </Events>
                         </Component>
                         <Component class="javax.swing.JComboBox" name="cmbQualification">
                           <Properties>
@@ -501,6 +496,9 @@
                                   </Border>
                                 </Property>
                                 <Property name="opaque" type="boolean" value="true"/>
+                                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                                  <Dimension value="[4, 4]"/>
+                                </Property>
                               </Properties>
                             </Component>
                           </SubComponents>
