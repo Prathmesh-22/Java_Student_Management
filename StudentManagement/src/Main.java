@@ -1,4 +1,5 @@
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
@@ -84,7 +86,7 @@ public class Main extends javax.swing.JFrame {
         txtImagePath.setText("");
         dcDob.setDate(null);
         cmbQualification.setSelectedIndex(0);
-        rbtTemp.setSelected(true);
+        rbtTemp.setSelected(false);
         lblImage.setIcon(null);
     }
     
@@ -136,8 +138,8 @@ public class Main extends javax.swing.JFrame {
         btnClear = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
-        tblData = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        scrollPaneDataTable = new javax.swing.JScrollPane();
+        jtableData = new javax.swing.JTable();
 
         btnGroupGender.add(rbtTemp);
         rbtTemp.setText("jRadioButton1");
@@ -373,6 +375,11 @@ public class Main extends javax.swing.JFrame {
         });
 
         btnClear.setText("Clear");
+        btnClear.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnClearMouseClicked(evt);
+            }
+        });
         btnClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnClearActionPerformed(evt);
@@ -380,8 +387,18 @@ public class Main extends javax.swing.JFrame {
         });
 
         btnDelete.setText("Delete");
+        btnDelete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnDeleteMouseClicked(evt);
+            }
+        });
 
         btnUpdate.setText("Update");
+        btnUpdate.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnUpdateMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -443,7 +460,7 @@ public class Main extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jtableData.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -454,7 +471,12 @@ public class Main extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblData.setViewportView(jTable1);
+        jtableData.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jtableDataMouseClicked(evt);
+            }
+        });
+        scrollPaneDataTable.setViewportView(jtableData);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -463,7 +485,7 @@ public class Main extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(73, 73, 73)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tblData)
+                    .addComponent(scrollPaneDataTable)
                     .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 867, Short.MAX_VALUE)))
         );
@@ -475,7 +497,7 @@ public class Main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(3, 3, 3)
-                .addComponent(tblData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(scrollPaneDataTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jPanel8.add(jPanel6);
@@ -515,6 +537,108 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtContactActionPerformed
 
+    private void btnClearMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClearMouseClicked
+         // TODO add your handling code here:
+         
+    }//GEN-LAST:event_btnClearMouseClicked
+
+    private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
+        // TODO add your handling code here:
+        String message="Are you sure you want to delete thi record?";
+        int ans=JOptionPane.showConfirmDialog(this, message,
+                "Delete?",JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        
+        if(ans == JOptionPane.YES_OPTION){
+            String sql="DELTE FROM students WHERE enrollment_no= ?";
+            
+            try {
+                ps=conn.prepareStatement(sql);
+                ps.setInt(1,Integer.parseInt(txtEnrollmentNo.getText()));
+                ps.execute();
+                
+                fillDataTable();
+                
+                btnUpdate.setEnabled(false);
+                btnDelete.setEnabled(false);
+                
+                clearAll();
+                JOptionPane.showMessageDialog(this,
+                        "Student deleted successfully",
+                        "Deleted!",JOptionPane.INFORMATION_MESSAGE);
+            }catch(SQLException e){
+                JOptionPane.showMessageDialog(this,
+                        "Some error while fetching student details",
+                        "Error!",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnDeleteMouseClicked
+
+    private void btnUpdateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnUpdateMouseClicked
+        // TODO add your handling code here:
+        if(btnUpdate.getText().equalsIgnoreCase("Update")){
+            enableAll();
+            btnAdd.setEnabled(false);
+            btnDelete.setEnabled(false);
+            txtEnrollmentNo.setEnabled(false);
+            btnUpdate.setText("Save Updates");
+        }
+        else {
+            disableAll();
+            updateData();
+            fillDataTable();
+            btnUpdate.setText("Update");
+        }
+    }//GEN-LAST:event_btnUpdateMouseClicked
+
+    private void jtableDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtableDataMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = jtableData.getSelectedRow();
+            
+            String enrollmentNumber =jtableData.getValueAt(selectedRow,0 ).toString();
+            
+            try {
+                String sql="SELECT * FROM students WHERE enrollment_no= " + enrollmentNumber;
+                ps=conn.prepareStatement(sql);
+                rs=ps.executeQuery();
+                if(rs.next()){
+                    txtEnrollmentNo.setText(rs.getString("enrollment_no"));
+                    txtName.setText(rs.getString("name"));
+                    
+                    String selectedGender=rs.getString("gender");
+                    if("Male".equalsIgnoreCase(selectedGender)){
+                        rbtMale.setSelected(true);
+                    }else
+                        rbtFemale.setSelected(true);
+                    
+                    txtContact.setText(rs.getString("contact_no"));
+                    txtAge.setText(rs.getString("age"));
+                    
+                    cmbQualification.setSelectedItem(rs.getString("qualification"));
+                    String dob=rs.getString("dob");
+                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+                    Date date=sdf.parse(dob);
+                    dcDob.setDate(date);
+                    
+                    taAddress.setText(rs.getString("address"));
+                    
+                    byteImage=rs.getBytes("image");
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(byteImage));
+                    ImageIcon icon=new ImageIcon(image);
+                    lblImage.setIcon(icon);
+                    
+                    btnUpdate.setEnabled(true);
+                    btnDelete.setEnabled(true);
+                    
+                }
+            }
+            catch(SQLException | ParseException | IOException e){
+                JOptionPane.showMessageDialog(this
+                        ,"Some error while fetching student details",
+                        "Error!",JOptionPane.ERROR);
+            }
+    }//GEN-LAST:event_jtableDataMouseClicked
+
      private DefaultTableModel getStudentsTableModel(TableModel tm) {
         int nRow = tm.getRowCount();
         int nCol = tm.getColumnCount();
@@ -546,7 +670,7 @@ public class Main extends javax.swing.JFrame {
                     + "FROM students";
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
-            jTable1.setModel(getStudentsTableModel(DbUtils.resultSetToTableModel(rs)));
+            jtableData.setModel(getStudentsTableModel(DbUtils.resultSetToTableModel(rs)));
             
         } catch(SQLException e) {
             String msg = e.getMessage();
@@ -556,19 +680,24 @@ public class Main extends javax.swing.JFrame {
     }
     
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                       
-        if(btnAdd.getText().equals("Add")) {
+                // TODO add your handling code here:
+        if(btnAdd.getText().equals("Add")){
             enableAll();
+            clearAll();
+            btnUpdate.setEnabled(false);
+            btnDelete.setEnabled(false);
             btnAdd.setText("Save");
             btnClear.setEnabled(true);
-        } else {
+            
+        }
+        else{
             insertData();
             disableAll();
             clearAll();
             fillDataTable();
             btnAdd.setText("Add");
         }
-    }                                      
-
+    }    
     private void btnUploadImageActionPerformed(java.awt.event.ActionEvent evt) {                                               
         // TODO add your handling code here:
         JFileChooser chooser = new JFileChooser();
@@ -652,6 +781,55 @@ public class Main extends javax.swing.JFrame {
         }
         
     }
+    
+    private void updateData(){
+        String enrollmentNo=txtEnrollmentNo.getText();
+        String name=txtName.getText();
+        String age=txtAge.getText();
+        String contactNo=txtContact.getText();
+        String address=taAddress.getText();
+         String qualification=cmbQualification.getSelectedItem().toString();
+        String gender="";
+        if(rbtMale.isSelected()){
+            gender="Male";
+        }
+        else if(rbtFemale.isSelected()){
+            gender="Female";
+        }
+        
+        Date dob=dcDob.getDate();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        String dobString =sdf.format(dob);
+        
+        try {
+            String sql="UPDATE students SET "
+                    +"name=? , contact_no=?,age=?,qualification=?,gender=?,"
+                    + "dob=?,address=?,image=? WHERE enrollment_no=?";
+            ps=conn.prepareStatement(sql);
+            ps.setString(1,name);
+            ps.setString(2,contactNo);
+            ps.setString(3,age);
+            ps.setString(4,qualification);
+            ps.setString(5,gender);
+            ps.setString(6,dobString);
+            ps.setString(7,address);
+            ps.setBytes(8,byteImage);
+            ps.setString(9,enrollmentNo);
+            ps.execute();
+            
+            JOptionPane.showMessageDialog(this,"Record updated successfully!",
+                    "Success",JOptionPane.INFORMATION_MESSAGE);
+        }catch(SQLException e){
+            String msg=e.getMessage();
+            JOptionPane.showMessageDialog(this, msg,"Error!",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    
+    
+          
+
+
 
     /**
      * @param args the command line arguments
@@ -715,15 +893,15 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jtableData;
     private javax.swing.JLabel lblImage;
     private javax.swing.JLabel lblImagePath;
     private javax.swing.JPanel pnlBg;
     private javax.swing.JRadioButton rbtFemale;
     private javax.swing.JRadioButton rbtMale;
     private javax.swing.JRadioButton rbtTemp;
+    private javax.swing.JScrollPane scrollPaneDataTable;
     private javax.swing.JTextArea taAddress;
-    private javax.swing.JScrollPane tblData;
     private javax.swing.JTextField txtAge;
     private javax.swing.JTextField txtContact;
     private javax.swing.JTextField txtEnrollmentNo;
